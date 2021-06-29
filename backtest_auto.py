@@ -2,7 +2,7 @@ import requests, pandas as pd
 import input as input_data, xlwings as xw
 
 #open excel file/ workbook 
-wb = xw.Book("C:\\Users\\Vivikram\\OneDrive\\Git Hub\\API\\AUTOMATION\\Files\\Parameter Optimization_Planning Sheet.xlsx")
+wb = xw.Book("Files\\Parameter Optimization_Planning Sheet.xlsx")
 sheet = wb.sheets[0]
 #define the range 
 start = 5
