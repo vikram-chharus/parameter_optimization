@@ -1,11 +1,6 @@
 import requests, pandas as pd
 import input as input_data, xlwings as xw
-# Merging files 
-# import server
-# if server.run():
-    # do all the task mentioned below
-#open excel file/ workbook 
-wb = xw.Book("Files\\Parameter Optimization_Planning Sheet.xlsx")
+wb = xw.Book("C:\\Users\\Vivikram\\OneDrive\\Git Hub\\API\\AUTOMATION\\parameter_optimization\\Files\\Parameter Optimization_Planning Sheet.xlsx")
 sheet = wb.sheets[0]
 #define the range 
 start = 5
@@ -79,6 +74,3 @@ else:
     sheet.range("A14:B"+str(14+len(data))).value = data.to_numpy()
     print("Status: Completed")
 
-
-# else:
-#     print("Server is not running")
