@@ -58,7 +58,7 @@ def status(status):
 def get_Data():
     global backtest_data, min, max
     min = int(sheet.range("C3").value)
-    max = int(sheet.range("D3").value)+1
+    max = int(sheet.range("D3").value)
     send_request()
     sheet.range("E11").value = "SELECT"
 
@@ -75,10 +75,8 @@ def on_ready():
 
 def modify_data():
     global backtest_data, plot_data
-    if backtest_data is None:
-        return False
     ret_min = int(sheet.range("I2").value)
-    ret_max = int(sheet.range("H2").value)+1
+    ret_max = int(sheet.range("H2").value)
     backtest_data = pd.DataFrame(backtest_data)
     data = backtest_data[(backtest_data["percentage_profit"] >= ret_min )&( backtest_data["percentage_profit"] <= ret_max)]
     sheet.range("A14:D"+str(14+len(data))).value = data.to_numpy()
@@ -90,18 +88,19 @@ def on_modify():
         return False
     else:
         status("Running")
-        if not modify_data():
-            status("Please run backtest before modifiaction")
-            return False
-        else:
-            return True
+        modify_data()
+        return True
 
 def erase():
     sheet.range("A14:D"+str(14+total_rows)).value = [["" for x in range(4)] for x in range(total_rows)]
 
 def plot():
     if plot_data is not None:
-        plt.plot(plot_data)
+        try:
+            plot_data.plot(x= "Period", y= ["percentage_profit", "sharpe_ratio"], kind="bar")
+            plt.show()
+        except:
+            pass
 
 def on_status_change():
     global total_rows
@@ -117,6 +116,9 @@ def on_status_change():
     elif sheet.range("E11").value == "MODIFY":
         if total_rows != 0:
             erase()
+        else:
+            status("Please run backtest before modifiaction")
+            return False
         if not on_modify():
             sheet.range("E11").value = "SELECT"
             status("Select a valid range in H2 and I2")
@@ -126,7 +128,12 @@ def on_status_change():
 
 sheet.range("E11").value = "SELECT"
 sheet.range("D10").value = "STATUS"
-
+sheet.range("C3").value = ""
+sheet.range("D3").value = ""
+sheet.range("H2").value = ""
+sheet.range("I2").value = ""
+sheet.range("F7").value = ""
+sheet.range("F8").value = ""
 while True:
     if on_status_change():
         sheet.range("E11").value = "SELECT"
