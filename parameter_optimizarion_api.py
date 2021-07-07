@@ -1,20 +1,28 @@
 from os import stat
-from pandas.core import indexing
+import json
 import requests, pandas as pd
 import input as input_data, xlwings as xw
 import matplotlib.pyplot as plt
+import constants
 
 class optimization:
     
     def __init__(self):
         self.responses = list()
-        self.parameters = None
-        pass
+        self.result = {}
+        self.parameters = {}
         
+    def validateParameters(self, parameters):
+        for key in parameters.keys():
+            if parameters[key] != constants.constant:
+                self.parameters[key] = parameters[key]
+    
     def send_request(self, parameters):
-        self.parameters = parameters
-        for period in range(parameters["window_range_min"], parameters["window_range_max"]+1):
-            response = requests.request(method="POST", url="http://localhost:3000/public/v1/backtest/run",json=input_data.set_input("AXISBANK", parameters["indicator"], period))
+        self.validateParameters(parameters)
+        min = self.parameters["window_range_min"] if "window_range_min" in self.parameters.keys() else self.parameters["entry_range_min"] if "entry_range_min" in self.parameters.keys() else self.parameters["exit_range_min"] if "exit_range_min" in self.parameters.keys() else None
+        max = self.parameters["window_range_max"] if "window_range_max" in self.parameters.keys() else self.parameters["entry_range_max"] if "entry_range_max" in self.parameters.keys() else self.parameters["exit_range_max"] if "exit_range_max" in self.parameters.keys() else None
+        for period in range(min, max):
+            response = requests.request(method="POST", url="http://localhost:3000/public/v1/backtest/run",json=input_data.set_input("AXISBANK", "rsi", self.parameters))
             data = response.json()[0]
             ext_data = {
                 "period":period, 
@@ -26,8 +34,9 @@ class optimization:
             self.responses.append(ext_data)
         
         if len(self.responses) > 0:
-            self.responses= pd.DataFrame(self.responses)
-            return self.responses
+            self.result["responses"]= pd.DataFrame(self.responses).to_dict()
+            self.result["parameters"]= parameters
+            return self.result
         else:
             return False
 
@@ -36,19 +45,19 @@ class optimization:
 
 
 obj = optimization()
-input_ = {
+input_format = {
 "indicator": "rsi",
-"window_range_min": 14,
-"window_range_max": 18,
-"entry_range_min": 20,
-"entry_range_max": 40,
+"window_range_min": constants.constant,
+"window_range_max": constants.constant,
+"entry_range_min": constants.constant,
+"entry_range_max": constants.constant,
 "exit_range_min": 60,
-"exit_range_min": 80,
+"exit_range_max": 65,
 "return_min": 1,
 "sharpe_ratio_min": -2,
 "sharpe_ratio_max": 1,
 "loss_max": 2
 }
 
-print(obj.send_request(input_))
-print(obj.modify_data())
+print(obj.send_request(input_format))
+# print(obj.modify_data())

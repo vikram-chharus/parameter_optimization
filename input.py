@@ -1,6 +1,6 @@
-def set_input(stock,  indicator, value):
+def set_input(stock,  indicator, data):
     return {
-    "name": "Startegy name",
+    "name": "Testing",
     "time_frame": "ONE_HOUR",
     "symbol": stock,
     "entry_action": "buy",
@@ -13,7 +13,7 @@ def set_input(stock,  indicator, value):
         "name": indicator, 
         "attributes": {
             "column": "close", 
-            "period": value
+            "period": data["period"] if "period" in data.keys() else 14
         }
         }
     ],
@@ -21,7 +21,8 @@ def set_input(stock,  indicator, value):
     "right": [
         {
         "type": "number",
-        "value": 30
+        "value": data["entry_cutoff"] if "entry_cutoff" in data.keys() else 30
+
         }
     ]
     }],
@@ -33,7 +34,7 @@ def set_input(stock,  indicator, value):
         "name": indicator, 
         "attributes": {
             "column": "close", 
-            "period": value
+            "period": data["period"] if "period" in data.keys() else 14
         }
         }
     ],
@@ -41,7 +42,7 @@ def set_input(stock,  indicator, value):
     "right": [
         {
         "type": "number",
-        "value": 70
+        "value": data["exit_cutoff"] if "exit_cutoff" in data.keys() else 70
         }
     ]
     }],
