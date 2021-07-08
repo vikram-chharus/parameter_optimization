@@ -13,7 +13,7 @@ def set_input(stock,  indicator, data):
         "name": indicator, 
         "attributes": {
             "column": "close", 
-            "period": data["period"] if "period" in data.keys() else 14
+            "period": data["window"] if "window" in data.keys() else 14
         }
         }
     ],
@@ -21,7 +21,7 @@ def set_input(stock,  indicator, data):
     "right": [
         {
         "type": "number",
-        "value": data["entry_cutoff"] if "entry_cutoff" in data.keys() else 30
+        "value": data["entry"] if "entry" in data.keys() else 30
 
         }
     ]
@@ -34,7 +34,7 @@ def set_input(stock,  indicator, data):
         "name": indicator, 
         "attributes": {
             "column": "close", 
-            "period": data["period"] if "period" in data.keys() else 14
+            "period": data["window"] if "window" in data.keys() else 14
         }
         }
     ],
@@ -42,7 +42,7 @@ def set_input(stock,  indicator, data):
     "right": [
         {
         "type": "number",
-        "value": data["exit_cutoff"] if "exit_cutoff" in data.keys() else 70
+        "value": data["exit"] if "exit" in data.keys() else 70
         }
     ]
     }],
