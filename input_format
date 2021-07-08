@@ -1,0 +1,13 @@
+input_format = {
+"indicator": "rsi",
+"window_range_min": constants.constant,
+"window_range_max": constants.constant,
+"entry_range_min": constants.constant,
+"entry_range_max": constants.constant,
+"exit_range_min": 60,
+"exit_range_max": 65,
+"return_min": 1,
+"sharpe_ratio_min": -2,
+"sharpe_ratio_max": 1,
+"loss_max": 2
+}
