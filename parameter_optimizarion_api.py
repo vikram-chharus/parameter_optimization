@@ -47,11 +47,14 @@ class optimization:
 
     def modify_data(self, parameters):
         data = pd.DataFrame(self.responses)
-        if parameters["min_return"] != constants.constant:
-            data = data[(data["percentage_profit"] >= parameters["min_return"])]
-        if parameters["max_loss"] != constants.constant:
-            data = data[(data["max_loss"] >= parameters["max_loss"])]
-        if parameters["sharpe_ratio_min"] != constants.constant and parameters["sharpe_ratio_max"] != constants.constant:
-            data = data[(data["sharpe_ratio"] > parameters["sharpe_ratio_min"]) & (data["sharpe_ratio"] < parameters["sharpe_ratio_max"])]
+        # if parameters["min_return"] != constants.constant:
+        #     data = data[(data["percentage_profit"] >= parameters["min_return"])]
+        # if parameters["max_loss"] != constants.constant:
+        #     data = data[(data["max_loss"] >= parameters["max_loss"])]
+        # if parameters["sharpe_ratio_min"] != constants.constant and parameters["sharpe_ratio_max"] != constants.constant:
+        #     data = data[(data["sharpe_ratio"] > parameters["sharpe_ratio_min"]) & (data["sharpe_ratio"] < parameters["sharpe_ratio_max"])]
+        filters= [key+parameters[key][1]+str(parameters[key][0])+" and " for key in parameters.keys() if parameters[key][0] != constants.constant]
+        qur= "".join(filters).rsplit(" and ", 1)[0]    
+        data = data.query(qur)
         print(data)
         return data

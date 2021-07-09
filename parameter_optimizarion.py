@@ -30,10 +30,10 @@ def createAPIinput(modify=False):
         }
     elif modify:
         return {
-            "min_return": float(sheet.range("H2").value) if sheet.range("H2").value != None else constants.constant,
-            "max_loss": float(sheet.range("H3").value) if sheet.range("H3").value != None else constants.constant,
-            "sharpe_ratio_min": float(sheet.range("H4").value) if sheet.range("H4").value != None else constants.constant,
-            "sharpe_ratio_max": float(sheet.range("I4").value) if sheet.range("I4").value != None else constants.constant
+            "percentage_profit": [float(sheet.range("H2").value) if sheet.range("H2").value != None else constants.constant, ">"],
+            "max_loss": [float(sheet.range("H3").value) if sheet.range("H3").value != None else constants.constant, ">"],
+            "sharpe_ratio_min": [float(sheet.range("H4").value) if sheet.range("H4").value != None else constants.constant, ">"],
+            "sharpe_ratio_max": [float(sheet.range("I4").value) if sheet.range("I4").value != None else constants.constant,"<"]
         }
     else:
         return None
@@ -41,7 +41,7 @@ def createAPIinput(modify=False):
 
 #backtesing and storing data
 def send_request():
-    global server
+    global server, plot_data
     if server is not None:
         del server
     server = api.optimization()
@@ -53,23 +53,23 @@ def send_request():
         sheet.range("G7").value = row.iloc[0,3]
         sheet.range("G8").value = row.iloc[0,0]
         sheet.range("A7:E"+str(9+len(response["data"]))).value = data.round(2).to_numpy()
-
+        plot_data = data.round(2)
 def status(status):
     sheet.range("C4").value = status
 
 def on_ready():
-    global plot_data, backtest_data
+    global plot_data
     if (sheet.range("C3").value == None or sheet.range("D3").value == None):
         return False
     else:
         erase()
         status("Running")
         send_request()
-        plot_data = pd.DataFrame(backtest_data)
         return True
 
 
 def modify_data():
+    global plot_data
     responses = server.modify_data(createAPIinput(modify= True))
     if responses is not None:
         erase()
@@ -77,6 +77,7 @@ def modify_data():
         sheet.range("G7").value = row.iloc[0,3]
         sheet.range("G8").value = row.iloc[0,0]
         sheet.range("A7:E"+str(9+len(responses))).value = responses.round(2).to_numpy()
+        plot_data = responses.round(2)
     else:
         status("Something went wrong")
 
@@ -94,7 +95,7 @@ def erase():
 def plot():
     if plot_data is not None:
         try:
-            plot_data.plot(x= "Period", y= ["percentage_profit", "sharpe_ratio"], kind="bar")
+            plot_data.plot()
             plt.show()
         except:
             pass
